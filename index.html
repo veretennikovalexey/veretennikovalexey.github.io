@@ -1,17 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chessboard Example</title>
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>chessboard2 Example #1000-empty-board - Empty Board</title>
+    <base href="../" />
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css" integrity="sha384-47VeTDpmy4yT21gKPXQcLQYQZwlmz27gEH5NTrOmTk3G/SGvMyltclOW/Q8uE+sL" crossorigin="anonymous">
 </head>
 <body>
-    <div id="board" style="width: 800px"></div>
-    <script>
-        var board = Chessboard( 'board' );
-    </script>
+
+<!--- Begin Example HTML ------------------------------------------------------>
+<div id="myBoard" style="width: 600px;"></div>
+<!--- End Example HTML -------------------------------------------------------->
+
+<script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
+<script>
+function attachEvent (selectorOrId, eventType, fn) {
+  const el1 = document.getElementById(selectorOrId)
+  if (el1) { el1.addEventListener(eventType, fn); return }
+
+  const el2 = document.querySelector(selectorOrId)
+  if (el2) { el2.addEventListener(eventType, fn); return }
+
+  console.warn('Unable to attachEvent to element:', selectorOrId)
+}
+
+// --- Begin Example JS --------------------------------------------------------
+const board = Chessboard2( 'myBoard', 'start' )
+// --- End Example JS ----------------------------------------------------------
+</script>
 </body>
 </html>
