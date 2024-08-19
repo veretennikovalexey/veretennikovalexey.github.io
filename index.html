@@ -27,7 +27,10 @@ function attachEvent (selectorOrId, eventType, fn) {
 }
 
 // --- Begin Example JS --------------------------------------------------------
-const board = Chessboard2( 'myBoard', 'start' )
+const board = Chessboard2( 'myBoard', {
+  position: 'start',
+  draggable: true
+} );
 // --- End Example JS ----------------------------------------------------------
 </script>
 </body>
