@@ -1,0 +1,152 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>chessboard2 Example #5000-allow-legal-moves - Only Allow Legal Moves</title>
+    <base href="../" />
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css" integrity="sha384-47VeTDpmy4yT21gKPXQcLQYQZwlmz27gEH5NTrOmTk3G/SGvMyltclOW/Q8uE+sL" crossorigin="anonymous">
+</head>
+<body>
+
+<!--- Begin Example HTML ------------------------------------------------------>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js"
+  integrity="sha384-8sJV/krC8iV2g7t0PolQxFVckDtxhfM5gNHNAFPG2ZS/bScudOjfsB8ewhG2xle8"
+  crossorigin="anonymous"></script>
+
+<div id="myBoard" style="width: 600px"></div>
+
+<br><br>
+
+<div id="gameStatus"></div>
+
+<br><br>
+
+<label>х о д ы<br><br></label>
+<div id="gamePGN"></div>
+
+<!--- End Example HTML -------------------------------------------------------->
+
+<script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
+<!--
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.js" integrity="sha384-L0SnMpUnYUX6GNzeu549NqRJHDc9gljfSbFwmJFLZRNJiKLrLI+W9Cpw/DgHy5Vu" crossorigin="anonymous"></script>
+-->
+<script>
+function attachEvent (selectorOrId, eventType, fn) {
+  const el1 = document.getElementById(selectorOrId)
+  if (el1) { el1.addEventListener(eventType, fn); return }
+
+  const el2 = document.querySelector(selectorOrId)
+  if (el2) { el2.addEventListener(eventType, fn); return }
+
+  console.warn('Unable to attachEvent to element:', selectorOrId)
+}
+
+// --- Begin Example JS --------------------------------------------------------
+// NOTE: this example uses the chess.js library:
+// https://github.com/jhlywa/chess.js
+
+const ruyLopez = 'rnbqkbnr/ppp2ppp/3p4/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3'
+const game = new Chess(ruyLopez)
+
+const boardConfig = {
+  draggable: true,
+  position: ruyLopez,
+  onDragStart,
+  onDrop
+  // onSnapEnd
+}
+const board = Chessboard2('myBoard', boardConfig)
+
+const statusEl = byId('gameStatus')
+const pgnEl = byId('gamePGN')
+
+updateStatus()
+
+function onDragStart (dragStartEvt) {
+  // do not pick up pieces if the game is over
+  if (game.game_over()) return false
+
+  // only pick up pieces for the side to move
+  if (game.turn() === 'w' && !isWhitePiece(dragStartEvt.piece)) return false
+  if (game.turn() === 'b' && !isBlackPiece(dragStartEvt.piece)) return false
+
+  // what moves are available to from this square?
+  const legalMoves = game.moves({
+    square: dragStartEvt.square,
+    verbose: true
+  })
+
+  // place Circles on the possible target squares
+  legalMoves.forEach((move) => {
+    board.addCircle(move.to)
+  })
+}
+
+function isWhitePiece (piece) { return /^w/.test(piece) }
+function isBlackPiece (piece) { return /^b/.test(piece) }
+
+function onDrop (dropEvt) {
+  // see if the move is legal
+  const move = game.move({
+    from: dropEvt.source,
+    to: dropEvt.target,
+    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+  })
+
+  // remove all Circles from the board
+  board.clearCircles()
+
+  // make the move if it is legal
+  if (move) {
+    // update the board position with the new game position, then update status DOM elements
+    board.fen(game.fen(), () => {
+      updateStatus()
+    })
+  } else {
+    return 'snapback'
+  }
+}
+
+// update the board position after the piece snap
+// for castling, en passant, pawn promotion
+// function onSnapEnd () {
+//   board.position(game.fen())
+// }
+
+// update DOM elements with the current game status
+function updateStatus () {
+  let statusHTML = ''
+  const whosTurn = game.turn() === 'w' ? 'ход белых' : 'ход чёрных'
+
+  if (!game.game_over()) {
+    if (game.in_check()) statusHTML = whosTurn + ' is in check! '
+    statusHTML = statusHTML + whosTurn + ' '
+  } else if (game.in_checkmate() && game.turn() === 'w') {
+    statusHTML = 'Game over: white is in checkmate. Black wins!'
+  } else if (game.in_checkmate() && game.turn() === 'b') {
+    statusHTML = 'Game over: black is in checkmate. White wins!'
+  } else if (game.in_stalemate() && game.turn() === 'w') {
+    statusHTML = 'Game is drawn. White is stalemated.'
+  } else if (game.in_stalemate() && game.turn() === 'b') {
+    statusHTML = 'Game is drawn. Black is stalemated.'
+  } else if (game.in_threefold_repetition()) {
+    statusHTML = 'Game is drawn by threefold repetition rule.'
+  } else if (game.insufficient_material()) {
+    statusHTML = 'Game is drawn by insufficient material.'
+  } else if (game.in_draw()) {
+    statusHTML = 'Game is drawn by fifty-move rule.'
+  }
+
+  statusEl.innerHTML = statusHTML
+  pgnEl.innerHTML = game.pgn()
+}
+
+function byId (id) {
+  return document.getElementById(id)
+}
+// --- End Example JS ----------------------------------------------------------
+</script>
+</body>
+</html>
