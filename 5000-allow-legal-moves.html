@@ -9,26 +9,23 @@
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css" integrity="sha384-47VeTDpmy4yT21gKPXQcLQYQZwlmz27gEH5NTrOmTk3G/SGvMyltclOW/Q8uE+sL" crossorigin="anonymous">
 </head>
 <body>
-    <p><a href="examples#5000-allow-legal-moves">&larr; Back to all examples.</a></p>
-
-    <p><p>You can integrate chessboard2 with the <a href="https://github.com/jhlywa/chess.js">chess.js library</a> to only allow legal moves.</p>
-<p>Note that chessboard2 does not contain any logic about how to play the game of chess: it is simply &quot;a board&quot;.
-chessboard2 does not know how pieces move, whether Black is in check, whether casting is legal, etc.</p>
-</p>
 
 <!--- Begin Example HTML ------------------------------------------------------>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js"
   integrity="sha384-8sJV/krC8iV2g7t0PolQxFVckDtxhfM5gNHNAFPG2ZS/bScudOjfsB8ewhG2xle8"
   crossorigin="anonymous"></script>
 
-<div id="myBoard" style="width: 400px"></div>
+<div id="myBoard" style="width: 600px"></div>
 
-<label>Status:</label>
+<br><br>
+
 <div id="gameStatus"></div>
-<label>FEN:</label>
-<div id="gameFEN"></div>
-<label>PGN:</label>
+
+<br><br>
+
+<label>х о д ы</label>
 <div id="gamePGN"></div>
+
 <!--- End Example HTML -------------------------------------------------------->
 
 <script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
@@ -62,7 +59,6 @@ const boardConfig = {
 const board = Chessboard2('myBoard', boardConfig)
 
 const statusEl = byId('gameStatus')
-const fenEl = byId('gameFEN')
 const pgnEl = byId('gamePGN')
 
 updateStatus()
@@ -121,11 +117,11 @@ function onDrop (dropEvt) {
 // update DOM elements with the current game status
 function updateStatus () {
   let statusHTML = ''
-  const whosTurn = game.turn() === 'w' ? 'White' : 'Black'
+  const whosTurn = game.turn() === 'w' ? 'ход белых' : 'ход чёрных'
 
   if (!game.game_over()) {
     if (game.in_check()) statusHTML = whosTurn + ' is in check! '
-    statusHTML = statusHTML + whosTurn + ' to move.'
+    statusHTML = statusHTML + whosTurn + ' '
   } else if (game.in_checkmate() && game.turn() === 'w') {
     statusHTML = 'Game over: white is in checkmate. Black wins!'
   } else if (game.in_checkmate() && game.turn() === 'b') {
@@ -143,7 +139,6 @@ function updateStatus () {
   }
 
   statusEl.innerHTML = statusHTML
-  fenEl.innerHTML = game.fen()
   pgnEl.innerHTML = game.pgn()
 }
 
