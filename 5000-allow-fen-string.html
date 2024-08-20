@@ -28,6 +28,10 @@
 <label>х о д ы<br><br></label>
 <div id="gamePGN"></div>
 
+<br><br>
+
+<!-- Кнопка для переворота доски -->
+<button id="flipBoard">Перевернуть доску</button>
 
 <script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
 
@@ -141,6 +145,14 @@ function setPosition() {
 }
 
 attachEvent('setPositionButton', 'click', setPosition);
+
+
+// Функция для переворота доски
+document.getElementById('flipBoard').addEventListener('click', function () {
+  const currentOrientation = board.orientation()
+  const newOrientation = currentOrientation === 'white' ? 'black' : 'white'
+  board.orientation(newOrientation)
+})
 </script>
 
 </body>
