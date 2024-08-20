@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html>
 <head>
@@ -12,26 +11,43 @@
 
   <h1>Испанка</h1>
 
-<!--- Begin Example HTML ------------------------------------------------------>
-<div id="myBoard" style="width: 600px"></div>
-<!--- End Example HTML -------------------------------------------------------->
+  <!-- Строка ввода FEN и кнопка -->
+  <input type="text" id="fenInput" placeholder="Введите FEN" style="width: 500px; margin-bottom: 10px;">
+  <button id="setPositionButton">Установить позицию</button>
 
-<script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
-<script>
-function attachEvent (selectorOrId, eventType, fn) {
-  const el1 = document.getElementById(selectorOrId)
-  if (el1) { el1.addEventListener(eventType, fn); return }
+  <!--- Begin Example HTML ------------------------------------------------------>
+  <div id="myBoard" style="width: 600px"></div>
+  <!--- End Example HTML -------------------------------------------------------->
 
-  const el2 = document.querySelector(selectorOrId)
-  if (el2) { el2.addEventListener(eventType, fn); return }
+  <script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
+  <script>
+  function attachEvent (selectorOrId, eventType, fn) {
+    const el1 = document.getElementById(selectorOrId)
+    if (el1) { el1.addEventListener(eventType, fn); return }
 
-  console.warn('Unable to attachEvent to element:', selectorOrId)
-}
+    const el2 = document.querySelector(selectorOrId)
+    if (el2) { el2.addEventListener(eventType, fn); return }
 
-// --- Begin Example JS --------------------------------------------------------
-const ruyLopez = 'r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R'
-const board = Chessboard2('myBoard', ruyLopez)
-// --- End Example JS ----------------------------------------------------------
-</script>
+    console.warn('Unable to attachEvent to element:', selectorOrId)
+  }
+
+  // --- Begin Example JS --------------------------------------------------------
+  const ruyLopez = 'r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R'
+  const board = Chessboard2('myBoard', ruyLopez)
+
+  // Функция для обновления позиции на доске
+  function setPosition() {
+    const fen = document.getElementById('fenInput').value.trim();
+    if (fen) {
+      board.position(fen);
+    } else {
+      alert('Пожалуйста, введите FEN.');
+    }
+  }
+
+  // Привязка функции к кнопке
+  attachEvent('setPositionButton', 'click', setPosition);
+  // --- End Example JS ----------------------------------------------------------
+  </script>
 </body>
 </html>
