@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>chessboard2 Example #1002-fen-string - FEN String</title>
+    <base href="../" />
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css" integrity="sha384-47VeTDpmy4yT21gKPXQcLQYQZwlmz27gEH5NTrOmTk3G/SGvMyltclOW/Q8uE+sL" crossorigin="anonymous">
+</head>
+<body>
+
+  <!-- Строка ввода FEN и кнопка -->
+  <input type="text" id="fenInput" placeholder="Введите FEN" style="width: 500px; margin-bottom: 10px;">
+  <button id="setPositionButton">Установить позицию</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js"
+  integrity="sha384-8sJV/krC8iV2g7t0PolQxFVckDtxhfM5gNHNAFPG2ZS/bScudOjfsB8ewhG2xle8"
+  crossorigin="anonymous"></script>
+
+  <div id="myBoard" style="width: 600px"></div>
+
+<br><br>
+
+<div id="gameStatus"></div>
+
+<br><br>
+
+<label>х о д ы<br><br></label>
+<div id="gamePGN"></div>
+
+<br><br>
+
+<!-- Кнопка для переворота доски -->
+<button id="flipBoard">Сделать ход</button>
+
+<br><br>
+
+<a id="move" href="?from=e2&to=e4">Сделать ход</a>
+
+<script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
+
+<script>
+function attachEvent (selectorOrId, eventType, fn) {
+  const el1 = document.getElementById(selectorOrId)
+  if (el1) { el1.addEventListener(eventType, fn); return }
+
+  const el2 = document.querySelector(selectorOrId)
+  if (el2) { el2.addEventListener(eventType, fn); return }
+
+  console.warn('Unable to attachEvent to element:', selectorOrId)
+}
+
+const game = new Chess()
+
+const boardConfig = {
+  draggable: true,
+  position: game.fen(),
+  onDragStart,
+  onDrop
+}
+const board = Chessboard2('myBoard', boardConfig)
+
+const statusEl = byId('gameStatus')
+const pgnEl = byId('gamePGN')
+
+updateStatus()
+
+function onDragStart (dragStartEvt) {
+  if (game.game_over()) return false
+
+  if (game.turn() === 'w' && !isWhitePiece(dragStartEvt.piece)) return false
+  if (game.turn() === 'b' && !isBlackPiece(dragStartEvt.piece)) return false
+
+  const legalMoves = game.moves({
+    square: dragStartEvt.square,
+    verbose: true
+  })
+
+  legalMoves.forEach((move) => {
+    board.addCircle(move.to)
+  })
+}
+
+function isWhitePiece (piece) { return /^w/.test(piece) }
+function isBlackPiece (piece) { return /^b/.test(piece) }
+
+function onDrop (dropEvt) {
+  const move = game.move({
+    from: dropEvt.source,
+    to: dropEvt.target,
+    promotion: 'q'
+  })
+
+  board.clearCircles()
+
+  if (move) {
+    board.fen(game.fen(), () => {
+      updateStatus()
+    })
+  } else {
+    return 'snapback'
+  }
+}
+
+function updateStatus () {
+  let statusHTML = ''
+  const whosTurn = game.turn() === 'w' ? 'ход белых' : 'ход чёрных'
+
+  if (!game.game_over()) {
+    if (game.in_check()) statusHTML = whosTurn + ' под шахом! '
+    statusHTML = statusHTML + whosTurn + ' '
+  } else if (game.in_checkmate() && game.turn() === 'w') {
+    statusHTML = 'Игра окончена: белые в мате. Победа чёрных!'
+  } else if (game.in_checkmate() && game.turn() === 'b') {
+    statusHTML = 'Игра окончена: чёрные в мате. Победа белых!'
+  } else if (game.in_stalemate() && game.turn() === 'w') {
+    statusHTML = 'Ничья. Пат белых.'
+  } else if (game.in_stalemate() && game.turn() === 'b') {
+    statusHTML = 'Ничья. Пат чёрных.'
+  } else if (game.in_threefold_repetition()) {
+    statusHTML = 'Ничья по правилу трёхкратного повторения.'
+  } else if (game.insufficient_material()) {
+    statusHTML = 'Ничья из-за недостатка материала.'
+  } else if (game.in_draw()) {
+    statusHTML = 'Ничья по правилу 50 ходов.'
+  }
+
+  statusEl.innerHTML = statusHTML
+  pgnEl.innerHTML = game.pgn()
+}
+
+function byId (id) {
+  return document.getElementById(id)
+}
+
+function setPosition() {
+  const fen = document.getElementById('fenInput').value.trim();
+  if (fen) {
+    const loaded = game.load(fen);  // Загружаем позицию в игру
+    if (loaded) {
+      board.position(game.fen());  // Обновляем доску с позиции игры
+      updateStatus();  // Обновляем статус игры
+    } else {
+      alert('Неверный FEN.');
+    }
+  } else {
+    alert('Пожалуйста, введите FEN.');
+  }
+}
+
+attachEvent('setPositionButton', 'click', setPosition);
+
+document.getElementById('move').addEventListener('click', function (event) {
+  event.preventDefault(); // Предотвращаем переход по ссылке
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const from = urlParams.get('from');
+  const to = urlParams.get('to');
+
+  const move = game.move({
+    from: 'e2',
+    to: 'e3',
+    promotion: 'q'
+  });
+
+  board.clearCircles();
+
+  if (move) {
+    board.fen(game.fen(), () => {
+      updateStatus();
+    });
+  } else {
+    return 'snapback';
+  }
+});
+
+
+// Функция для переворота доски
+document.getElementById('flipBoard').addEventListener('click', function () {
+  const move = game.move({
+    from: 'e2',
+    to: 'e4',
+    promotion: 'q'
+  })
+
+  board.clearCircles()
+
+  if (move) {
+    board.fen(game.fen(), () => {
+      updateStatus()
+    })
+  } else {
+    return 'snapback'
+  }
+})
+
+  // Получение параметра FEN из URL
+  function getFenFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('fen');
+  }
+
+  // Установка позиции, если параметр FEN есть в URL
+  const fenFromUrl = getFenFromUrl();
+  if (fenFromUrl) {
+    document.getElementById('fenInput').value = fenFromUrl; // Заполнить поле FEN значением из URL
+    setPosition(fenFromUrl);
+  }
+
+
+</script>
+
+</body>
+</html>

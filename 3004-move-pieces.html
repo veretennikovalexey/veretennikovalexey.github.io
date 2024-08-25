@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>chessboard2 Example #3004-move-pieces - Move Pieces</title>
+    <base href="../" />
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css" integrity="sha384-47VeTDpmy4yT21gKPXQcLQYQZwlmz27gEH5NTrOmTk3G/SGvMyltclOW/Q8uE+sL" crossorigin="anonymous">
+</head>
+<body>
+    <p><a href="examples#3004-move-pieces">&larr; Back to all examples.</a></p>
+
+    <p><p>Use the <a href="docs.html#methods:move">.move()</a> method to make one or more moves on the board.</p>
+</p>
+
+<!--- Begin Example HTML ------------------------------------------------------>
+<div id="myBoard" style="width: 400px"></div>
+<button id="move1Btn">e2-e4</button>
+<button id="move2Btn">d2-d4, g8-f6</button>
+<button id="move3Btn">Animation Speed</button>
+<button id="disableAnimationsBtn">Disable animations with 'false'</button>
+<button id="moveWithCallbackBtn">.move() with callback function</button>
+<button id="move6Btn">.move() with config object</button>
+<button id="move7Btn">Single Move returns a Promise Object</button>
+<button id="move8Btn">Multiple Moves returns an Array of Promises</button>
+<!-- <button id="move9Btn">Move 9</button> -->
+<button id="move10Btn">Combine Instant and Animated Moves</button>
+<button id="startPositionBtn">Start Position</button>
+<!--- End Example HTML -------------------------------------------------------->
+
+<script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
+<script>
+function attachEvent (selectorOrId, eventType, fn) {
+  const el1 = document.getElementById(selectorOrId)
+  if (el1) { el1.addEventListener(eventType, fn); return }
+
+  const el2 = document.querySelector(selectorOrId)
+  if (el2) { el2.addEventListener(eventType, fn); return }
+
+  console.warn('Unable to attachEvent to element:', selectorOrId)
+}
+
+// --- Begin Example JS --------------------------------------------------------
+const board = Chessboard2('myBoard', 'start')
+
+attachEvent('move1Btn', 'click', () => {
+  board.move('e2-e4')
+})
+
+attachEvent('move2Btn', 'click', () => {
+  // pass multiple moves as arguments
+  board.move('d2-d4', 'g8-f6')
+})
+
+attachEvent('move3Btn', 'click', () => {
+  // you can pass a duration time to the .move() function
+  // duration times are either in milliseconds or the following strings:
+  // "super fast" - 40ms
+  // "fast" - 80ms
+  // "slow" - 300ms
+  // "super slow" - 800ms
+  board.move('a2-a7', 'slow')
+  board.move('b2-b7', 5000)
+})
+
+attachEvent('disableAnimationsBtn', 'click', () => {
+  // pass in false to disable animations
+  board.move('d7-d5', false)
+})
+
+attachEvent('moveWithCallbackBtn', 'click', () => {
+  // pass a callback function that will fire when the animation of the move is complete
+  board.move('g1-f3', function (move) {
+    console.log('Animation finished for g1-f3:')
+    console.log(move)
+  })
+})
+
+attachEvent('move6Btn', 'click', () => {
+  // pass a config object
+  board.move({
+    animate: true,
+    animateSpeed: 1000,
+    from: 'g2',
+    onComplete: (m) => { console.log('Move complete:', m) },
+    to: 'g4'
+  })
+})
+
+attachEvent('move7Btn', 'click', () => {
+  // move() returns a Promise object that fires when the animation has completed
+  board.move('c7-c5').then((move) => {
+    console.log('Animation has completed. Here is information about the move:')
+    console.log(move)
+  })
+})
+
+attachEvent('move8Btn', 'click', () => {
+  // multiple moves will return an Array of Promises
+  Promise.all(board.move('h2-h4', 'h1-h3')).then((moves) => {
+    console.log('Animations are complete:')
+    console.log(moves)
+  })
+})
+
+/*
+FIXME FIXME FIXME - this does not work. Consider changing the API?
+attachEvent('move9Btn', 'click', () => {
+  // the Promise object will reject if the move is invalid / not possible
+  board.move('g6-f6').then((move) => {
+    console.log('Animation has completed. Here is information about the move:')
+    console.log(move)
+  }).catch((err) => {
+    console.log('Invalid move:')
+    console.log(err)
+  })
+})
+*/
+
+attachEvent('move10Btn', 'click', () => {
+  // you may combine instant and animated moves in the same .move() call
+  board.move({
+    animate: true,
+    animateSpeed: 'superslow',
+    from: 'g7',
+    to: 'g4'
+  },
+  {
+    animate: false,
+    from: 'f7',
+    to: 'f4'
+  })
+})
+
+attachEvent('startPositionBtn', 'click', () => {
+  board.start()
+})
+// --- End Example JS ----------------------------------------------------------
+</script>
+</body>
+</html>
