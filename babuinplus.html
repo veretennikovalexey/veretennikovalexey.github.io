@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Переключение элементов из URL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button onclick="showNext()">Показать следующий элемент</button>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        // Функция для получения параметров из URL строки
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Получаем значения параметра babuin из URL
+        const babuinParam = getUrlParameter('babuin');
+
+        // Если параметр найден, разбиваем его на массив элементов
+        const babuin = babuinParam ? babuinParam.split(',') : [];
+
+        // Индекс текущего элемента
+        let currentIndex = 0;
+
+        // Функция для отображения следующего элемента
+        function showNext() {
+            if (babuin.length > 0) {
+                // Отображаем текущий элемент
+                document.getElementById("output").textContent = babuin[currentIndex];
+                
+                // Увеличиваем индекс для следующего элемента
+                currentIndex = (currentIndex + 1) % babuin.length;
+            } else {
+                document.getElementById("output").textContent = "Нет элементов для отображения";
+            }
+        }
+    </script>
+</body>
+</html>

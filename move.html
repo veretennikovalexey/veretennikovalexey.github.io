@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>move</title>
+    <base href="../" />
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css" integrity="sha384-47VeTDpmy4yT21gKPXQcLQYQZwlmz27gEH5NTrOmTk3G/SGvMyltclOW/Q8uE+sL" crossorigin="anonymous">
+</head>
+<body>
+
+  <button id="setPositionButton">Сделать ход e2 e3</button>
+
+<br><br>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js"
+  integrity="sha384-8sJV/krC8iV2g7t0PolQxFVckDtxhfM5gNHNAFPG2ZS/bScudOjfsB8ewhG2xle8"
+  crossorigin="anonymous"></script>
+
+  <div id="myBoard" style="width: 600px"></div>
+
+<br><br>
+
+<div id="gameStatus"></div>
+
+<br><br>
+
+<label>х о д ы<br><br></label>
+<div id="gamePGN"></div>
+
+<br><br>
+
+<!-- Кнопка для переворота доски -->
+<button id="flipBoard">Перевернуть доску</button>
+
+<script src="https://unpkg.com/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js" integrity="sha384-/KwQCjA1GWovZNV3QDVtvSMDzO4reGgarF/RqHipr7hIUElH3r5zNl9WEPPOBRIF" crossorigin="anonymous"></script>
+
+<script>
+function attachEvent (selectorOrId, eventType, fn) {
+  const el1 = document.getElementById(selectorOrId)
+  if (el1) { el1.addEventListener(eventType, fn); return }
+
+  const el2 = document.querySelector(selectorOrId)
+  if (el2) { el2.addEventListener(eventType, fn); return }
+
+  console.warn('Unable to attachEvent to element:', selectorOrId)
+}
+
+const game = new Chess()
+
+const boardConfig = {
+  draggable: true,
+  position: game.fen(),
+  onDragStart,
+  onDrop
+}
+const board = Chessboard2('myBoard', boardConfig)
+
+const statusEl = byId('gameStatus')
+const pgnEl = byId('gamePGN')
+
+updateStatus()
+
+function onDragStart (dragStartEvt) {
+  if (game.game_over()) return false
+
+  if (game.turn() === 'w' && !isWhitePiece(dragStartEvt.piece)) return false
+  if (game.turn() === 'b' && !isBlackPiece(dragStartEvt.piece)) return false
+
+  const legalMoves = game.moves({
+    square: dragStartEvt.square,
+    verbose: true
+  })
+
+  legalMoves.forEach((move) => {
+    board.addCircle(move.to)
+  })
+}
+
+function isWhitePiece (piece) { return /^w/.test(piece) }
+function isBlackPiece (piece) { return /^b/.test(piece) }
+
+function onDrop (dropEvt) {
+  const move = game.move({
+    from: dropEvt.source,
+    to: dropEvt.target,
+    promotion: 'q'
+  })
+
+  board.clearCircles()
+
+  if (move) {
+    board.fen(game.fen(), () => {
+      updateStatus()
+    })
+  } else {
+    return 'snapback'
+  }
+}
+
+function updateStatus () {
+  let statusHTML = ''
+  const whosTurn = game.turn() === 'w' ? 'ход белых' : 'ход чёрных'
+
+  if (!game.game_over()) {
+    if (game.in_check()) statusHTML = whosTurn + ' под шахом! '
+    statusHTML = statusHTML + whosTurn + ' '
+  } else if (game.in_checkmate() && game.turn() === 'w') {
+    statusHTML = 'Игра окончена: белые в мате. Победа чёрных!'
+  } else if (game.in_checkmate() && game.turn() === 'b') {
+    statusHTML = 'Игра окончена: чёрные в мате. Победа белых!'
+  } else if (game.in_stalemate() && game.turn() === 'w') {
+    statusHTML = 'Ничья. Пат белых.'
+  } else if (game.in_stalemate() && game.turn() === 'b') {
+    statusHTML = 'Ничья. Пат чёрных.'
+  } else if (game.in_threefold_repetition()) {
+    statusHTML = 'Ничья по правилу трёхкратного повторения.'
+  } else if (game.insufficient_material()) {
+    statusHTML = 'Ничья из-за недостатка материала.'
+  } else if (game.in_draw()) {
+    statusHTML = 'Ничья по правилу 50 ходов.'
+  }
+
+  statusEl.innerHTML = statusHTML
+  pgnEl.innerHTML = game.pgn()
+}
+
+function byId (id) {
+  return document.getElementById(id)
+}
+
+let ci = 0;
+const moves = [ "e2", "e3" ];
+
+function setPosition() {
+  const move = game.move({
+    from: moves[0],
+    to: moves[1],
+    promotion: 'q'
+  })
+
+  board.clearCircles()
+
+  if (move) {
+    board.fen(game.fen(), () => {
+      updateStatus()
+    })
+  } else {
+    return 'snapback'
+  }
+}
+
+attachEvent('setPositionButton', 'click', setPosition);
+
+// Функция для переворота доски
+document.getElementById('flipBoard').addEventListener('click', function () {
+  const currentOrientation = board.orientation()
+  const newOrientation = currentOrientation === 'white' ? 'black' : 'white'
+  board.orientation(newOrientation)
+})
+
+</script>
+
+</body>
+</html>
