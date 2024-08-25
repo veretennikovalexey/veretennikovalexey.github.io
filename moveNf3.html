@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <button id="setPositionButton">Сделать ход</button>
+  <button id="setPositionButton">Сделать ход Nf3</button>
 
 <br><br>
 
@@ -129,24 +129,11 @@ function byId (id) {
   return document.getElementById(id)
 }
 
-        // Функция для получения параметров из URL строки
-        function getUrlParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
-
-        // Получаем значения параметра babuin из URL
-        const babuinParam = getUrlParameter('moves');
-
-let ci = -1;
-// const moves = [ "e2", "e3" ];
-const moves = babuinParam ? babuinParam.split(',') : []; 
+let ci = 0;
+const moves = [ "Nb1", "Nc3" ];
 
 function setPosition() {
-
-  ci = ci + 1;   
-
-  const move = game.move( moves[ci] )
+  const move = game.move('Nf3')
 
   board.clearCircles()
 
