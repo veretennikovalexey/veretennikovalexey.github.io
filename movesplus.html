@@ -9,6 +9,8 @@
 </head>
 <body>
 
+<div id="output"></div><br>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js"
   integrity="sha384-8sJV/krC8iV2g7t0PolQxFVckDtxhfM5gNHNAFPG2ZS/bScudOjfsB8ewhG2xle8"
   crossorigin="anonymous"></script>
@@ -144,6 +146,8 @@ function byId (id) {
         const babuinParam = getUrlParameter('moves');
 
 let ci = -1;
+document.getElementById('output').innerText = ci;
+
 // const moves = [ "e2", "e3" ];
 const moves = babuinParam ? babuinParam.split(',') : []; 
 
@@ -151,6 +155,7 @@ function setPosition() {
 
   if (moves.length > ci) {
     ci = ci + 1;   
+    document.getElementById('output').innerText = ci;
   }
 
   const move = game.move( moves[ci] )
@@ -170,6 +175,7 @@ function undoButton() {
   const move = game.undo()
 
   ci = ci - 1;   
+  document.getElementById('output').innerText = ci;
 
   board.clearCircles()
 
