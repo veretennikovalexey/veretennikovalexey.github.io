@@ -11,6 +11,8 @@
 
   <button id="setPositionButton"><font size=24>Сделать ход</font></button>
 
+&nbsp;&nbsp;
+
   <button id="undoButton"><font size=24>Вернуть ход</font></button>
 
 <br><br>
@@ -163,6 +165,8 @@ function setPosition() {
 
 function undoButton() {
   const move = game.undo()
+
+  ci = ci - 1;   
 
   board.clearCircles()
 
