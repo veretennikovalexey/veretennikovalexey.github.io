@@ -172,9 +172,12 @@ function setPosition() {
 }
 
 function undoButton() {
-  const move = game.undo()
 
-  ci = ci - 1;   
+  if (ci >= 0 ) {
+    const move = game.undo();
+    ci = ci - 1;   
+  }
+
   document.getElementById('output').innerText = ci;
 
   board.clearCircles()
