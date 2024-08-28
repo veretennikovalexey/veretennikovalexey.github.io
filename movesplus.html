@@ -173,22 +173,21 @@ function setPosition() {
 
 function undoButton() {
 
-//   if ( ci >= 0 ) {
+  if ( ci >= 0 ) {
     const move = game.undo();
     ci = ci - 1;   
-//  }
 
-  document.getElementById('output').innerText = ci;
+    board.clearCircles()
 
-  board.clearCircles()
-
-  if (move) {
-    board.fen(game.fen(), () => {
-      updateStatus()
-    })
-  } else {
-    return 'snapback'
+    if (move) {
+      board.fen(game.fen(), () => {
+        updateStatus()
+      })
+    } else {
+      return 'snapback'
+    }
   }
+  document.getElementById('output').innerText = ci;
 }
 
 
