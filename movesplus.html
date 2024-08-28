@@ -97,12 +97,15 @@ function onDrop (dropEvt) {
   board.clearCircles()
 
   if (move) {
+    ci = ci + 1;   
     board.fen(game.fen(), () => {
       updateStatus()
     })
   } else {
     return 'snapback'
   }
+
+  document.getElementById('output').innerText = ci;
 }
 
 function updateStatus () {
