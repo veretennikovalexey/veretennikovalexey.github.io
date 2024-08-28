@@ -173,10 +173,10 @@ function setPosition() {
 
 function undoButton() {
 
-  if (ci >= 0 ) {
+//   if ( ci >= 0 ) {
     const move = game.undo();
     ci = ci - 1;   
-  }
+//  }
 
   document.getElementById('output').innerText = ci;
 
