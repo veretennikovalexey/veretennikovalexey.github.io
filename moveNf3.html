@@ -13,6 +13,10 @@
 
 <br><br>
 
+  <button id="undoButton">Вернуть<br>ход</button>
+
+<br><br>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js"
   integrity="sha384-8sJV/krC8iV2g7t0PolQxFVckDtxhfM5gNHNAFPG2ZS/bScudOjfsB8ewhG2xle8"
   crossorigin="anonymous"></script>
@@ -146,7 +150,25 @@ function setPosition() {
   }
 }
 
+function undoButton() {
+  const move = game.undo()
+
+  board.clearCircles()
+
+  if (move) {
+    board.fen(game.fen(), () => {
+      updateStatus()
+    })
+  } else {
+    return 'snapback'
+  }
+}
+
+
 attachEvent('setPositionButton', 'click', setPosition);
+
+attachEvent('undoButton', 'click', undoButton);
+
 
 // Функция для переворота доски
 document.getElementById('flipBoard').addEventListener('click', function () {

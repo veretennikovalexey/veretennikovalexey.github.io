@@ -9,7 +9,9 @@
 </head>
 <body>
 
-  <button id="setPositionButton">Сделать ход</button>
+  <button id="setPositionButton"><font size=24>Сделать ход</font></button>
+
+  <button id="undoButton"><font size=24>Вернуть ход</font></button>
 
 <br><br>
 
@@ -159,7 +161,24 @@ function setPosition() {
   }
 }
 
+function undoButton() {
+  const move = game.undo()
+
+  board.clearCircles()
+
+  if (move) {
+    board.fen(game.fen(), () => {
+      updateStatus()
+    })
+  } else {
+    return 'snapback'
+  }
+}
+
+
 attachEvent('setPositionButton', 'click', setPosition);
+
+attachEvent('undoButton', 'click', undoButton);
 
 // Функция для переворота доски
 document.getElementById('flipBoard').addEventListener('click', function () {
