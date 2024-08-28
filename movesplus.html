@@ -170,6 +170,8 @@ function setPosition() {
       updateStatus()
     })
   } else {
+    ci = ci - 1;   
+    document.getElementById('output').innerText = ci;
     return 'snapback'
   }
 }
