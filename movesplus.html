@@ -159,21 +159,23 @@ function setPosition() {
   if (moves.length - 1 > ci) {
     ci = ci + 1;   
     document.getElementById('output').innerText = ci;
+
+    const move = game.move( moves[ci] )
+
+    board.clearCircles()
+
+    if (move) {
+      board.fen(game.fen(), () => {
+        updateStatus()
+      })
+    } else {
+      ci = ci - 1;   
+      document.getElementById('output').innerText = ci;
+      return 'snapback'
+    }
+
   }
 
-  const move = game.move( moves[ci] )
-
-  board.clearCircles()
-
-  if (move) {
-    board.fen(game.fen(), () => {
-      updateStatus()
-    })
-  } else {
-    ci = ci - 1;   
-    document.getElementById('output').innerText = ci;
-    return 'snapback'
-  }
 }
 
 function undoButton() {
