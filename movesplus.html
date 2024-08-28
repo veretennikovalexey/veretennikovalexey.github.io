@@ -153,7 +153,7 @@ const moves = babuinParam ? babuinParam.split(',') : [];
 
 function setPosition() {
 
-  if (moves.length > ci) {
+  if (moves.length - 1 > ci) {
     ci = ci + 1;   
     document.getElementById('output').innerText = ci;
   }
