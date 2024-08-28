@@ -149,7 +149,9 @@ const moves = babuinParam ? babuinParam.split(',') : [];
 
 function setPosition() {
 
-  ci = ci + 1;   
+  if (moves.length > ci) {
+    ci = ci + 1;   
+  }
 
   const move = game.move( moves[ci] )
 
